@@ -1,7 +1,13 @@
 'use strict';
 
 const path = require('path');
+const fs = require('fs');
 const crypto = require('crypto');
+
+// Plesk/Passenger gibi ortamlar server.js'i doğrudan çalıştırır; .env varsa burada yüklenir.
+const ENV_FILE = path.join(__dirname, '.env');
+if (fs.existsSync(ENV_FILE) && typeof process.loadEnvFile === 'function') process.loadEnvFile(ENV_FILE);
+
 const express = require('express');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -16,19 +22,30 @@ const { formatPrice, waLink, igLink } = require('./src/utils');
 const isProd = process.env.NODE_ENV === 'production';
 const PORT = Number(process.env.PORT) || 3000;
 
-let sessionSecret = process.env.SESSION_SECRET;
-if (!sessionSecret || sessionSecret.length < 32) {
-  if (isProd) {
-    console.error('HATA: Üretim ortamında en az 32 karakterlik SESSION_SECRET tanımlanmalı (.env).');
-    process.exit(1);
-  }
-  sessionSecret = crypto.randomBytes(48).toString('hex');
-  console.warn('Uyarı: SESSION_SECRET tanımlı değil, geçici bir anahtar üretildi (yeniden başlatınca oturumlar kapanır).');
+/**
+ * Oturum anahtarı: SESSION_SECRET tanımlıysa o kullanılır. Değilse bir kez rastgele üretilip
+ * data/ klasöründe (web kökü dışında, yalnızca sahibi okuyabilir) saklanır; yeniden başlatmada oturumlar korunur.
+ */
+function loadSessionSecret() {
+  const fromEnv = process.env.SESSION_SECRET;
+  if (fromEnv && fromEnv.length >= 32) return fromEnv;
+  const file = path.join(__dirname, 'data', '.session-secret');
+  try {
+    const saved = fs.readFileSync(file, 'utf8').trim();
+    if (saved.length >= 32) return saved;
+  } catch { /* ilk çalıştırma */ }
+  const secret = crypto.randomBytes(48).toString('hex');
+  fs.writeFileSync(file, secret, { mode: 0o600 });
+  console.warn('Bilgi: SESSION_SECRET tanımlı olmadığından data/.session-secret dosyasında yeni bir anahtar oluşturuldu.');
+  return secret;
 }
+const sessionSecret = loadSessionSecret();
 
 const app = express();
 app.disable('x-powered-by');
-if (process.env.TRUST_PROXY) app.set('trust proxy', Number(process.env.TRUST_PROXY) || 1);
+// Üretimde site Plesk'in Nginx/Apache vekili arkasında çalışır: HTTPS ve IP bilgisini vekilden al.
+const trustProxy = process.env.TRUST_PROXY || (isProd ? '1' : '');
+if (trustProxy) app.set('trust proxy', Number(trustProxy) || 1);
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -78,7 +95,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     rolling: true,
-    cookie: { httpOnly: true, sameSite: 'lax', secure: isProd, maxAge: 1000 * 60 * 60 * 8 },
+    cookie: { httpOnly: true, sameSite: 'lax', secure: isProd ? 'auto' : false, maxAge: 1000 * 60 * 60 * 8 },
   })
 );
 
