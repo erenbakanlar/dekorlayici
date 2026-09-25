@@ -1,0 +1,31 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="icerik">
+  <section class="page-hero">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="/">Ana Sayfa</a><span>/</span><span aria-current="page">Hakkımızda</span></nav>
+      <h1 class="page-hero__title">Hikâyemiz</h1>
+      <p class="page-hero__text"><%= settings.tagline %></p>
+    </div>
+  </section>
+
+  <section class="section section--flush-top">
+    <div class="container about">
+      <div class="about__text">
+        <div class="prose prose--lg"><%= settings.about_text %></div>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="/urunler">Koleksiyonu Keşfet</a>
+          <a class="btn btn--ghost" href="/kisiye-ozel">Özel Tasarım İste</a>
+        </div>
+      </div>
+      <div class="values">
+        <div class="value"><span class="feature__icon"><%- include('../partials/icon', { name: 'hand', size: 24 }) %></span><h3>Zanaat</h3><p>Her ürün elde, acele etmeden, detaylara özen gösterilerek hazırlanır.</p></div>
+        <div class="value"><span class="feature__icon"><%- include('../partials/icon', { name: 'sparkle', size: 24 }) %></span><h3>Kişisellik</h3><p>Evinizin ve hikâyenizin bir parçası olacak tasarımlar üretiriz.</p></div>
+        <div class="value"><span class="feature__icon"><%- include('../partials/icon', { name: 'box', size: 24 }) %></span><h3>Özen</h3><p>Ürünleriniz size ulaşana dek güvenle paketlenir, takip edilir.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

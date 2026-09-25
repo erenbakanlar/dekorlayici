@@ -1,0 +1,76 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="icerik">
+  <section class="page-hero">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Sayfa yolu">
+        <a href="/">Ana Sayfa</a><span>/</span>
+        <% if (category) { %><a href="/urunler">Ürünler</a><span>/</span><span aria-current="page"><%= category.name %></span>
+        <% } else { %><span aria-current="page">Ürünler</span><% } %>
+      </nav>
+      <h1 class="page-hero__title"><%= title %></h1>
+      <p class="page-hero__text"><%= category && category.description ? category.description : 'Yaşam alanlarınız için özenle seçilmiş dekoratif parçalar.' %></p>
+    </div>
+  </section>
+
+  <section class="section section--flush-top">
+    <div class="container">
+      <div class="chips" role="list">
+        <a role="listitem" class="chip <%= !category ? 'is-active' : '' %>" href="<%= buildUrl({ kategori: '', sayfa: '' }) %>">Tümü</a>
+        <% navCategories.forEach((c) => { %>
+        <a role="listitem" class="chip <%= category && category.id === c.id ? 'is-active' : '' %>" href="<%= buildUrl({ kategori: c.slug, sayfa: '' }) %>"><%= c.name %></a>
+        <% }) %>
+      </div>
+
+      <form class="toolbar" method="get" action="/urunler" data-autosubmit>
+        <% if (category) { %><input type="hidden" name="kategori" value="<%= category.slug %>"><% } %>
+        <label class="toolbar__search">
+          <%- include('../partials/icon', { name: 'search', size: 18 }) %>
+          <input type="search" name="q" value="<%= q %>" placeholder="Ürünlerde ara" aria-label="Ürünlerde ara" maxlength="80">
+        </label>
+        <label class="toggle">
+          <input type="checkbox" name="ozel" value="1" <%= onlyCustom ? 'checked' : '' %>>
+          <span class="toggle__track"></span> Kişiye özel yapılabilenler
+        </label>
+        <label class="toolbar__sort">
+          <span class="sr-only">Sıralama</span>
+          <select name="sirala" aria-label="Sıralama">
+            <option value="yeni" <%= sort === 'yeni' ? 'selected' : '' %>>En yeniler</option>
+            <option value="fiyat-artan" <%= sort === 'fiyat-artan' ? 'selected' : '' %>>Fiyat: Artan</option>
+            <option value="fiyat-azalan" <%= sort === 'fiyat-azalan' ? 'selected' : '' %>>Fiyat: Azalan</option>
+            <option value="ad" <%= sort === 'ad' ? 'selected' : '' %>>İsme göre (A-Z)</option>
+          </select>
+        </label>
+        <button class="btn btn--primary btn--sm" type="submit">Uygula</button>
+      </form>
+
+      <p class="result-count"><%= total %> ürün listeleniyor</p>
+
+      <% if (products.length) { %>
+      <div class="product-grid">
+        <% products.forEach((p) => { %><%- include('../partials/product-card', { p }) %><% }) %>
+      </div>
+      <% } else { %>
+      <div class="empty">
+        <%- include('../partials/icon', { name: 'search', size: 40 }) %>
+        <p>Aradığınız kriterlere uygun ürün bulunamadı.</p>
+        <a class="btn btn--ghost" href="/urunler">Filtreleri temizle</a>
+      </div>
+      <% } %>
+
+      <% if (pages > 1) { %>
+      <nav class="pagination" aria-label="Sayfalar">
+        <% if (page > 1) { %><a href="<%= buildUrl({ sayfa: String(page - 1) }) %>" aria-label="Önceki sayfa">‹</a><% } %>
+        <% for (let i = 1; i <= pages; i++) { %>
+          <% if (i === page) { %><span class="is-active" aria-current="page"><%= i %></span>
+          <% } else { %><a href="<%= buildUrl({ sayfa: i > 1 ? String(i) : '' }) %>"><%= i %></a><% } %>
+        <% } %>
+        <% if (page < pages) { %><a href="<%= buildUrl({ sayfa: String(page + 1) }) %>" aria-label="Sonraki sayfa">›</a><% } %>
+      </nav>
+      <% } %>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

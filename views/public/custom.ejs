@@ -1,0 +1,125 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="icerik">
+  <section class="page-hero page-hero--custom">
+    <div class="container page-hero__split">
+      <div>
+        <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="/">Ana Sayfa</a><span>/</span><span aria-current="page">Kişiye Özel</span></nav>
+        <h1 class="page-hero__title">Size özel, tek ve eşsiz</h1>
+        <p class="page-hero__text">İsim, tarih, renk ya da ölçü… Aklınızdaki dekoru birlikte hayata geçirelim. Doğum günü, düğün, yeni ev ya da kurumsal hediyeler için özel tasarımlar hazırlıyoruz.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary btn--lg" href="#talep">Talep Oluştur</a>
+          <% if (waUrl) { %><a class="btn btn--ghost btn--lg" href="<%= waLink(settings.whatsapp, 'Merhaba, kişiye özel bir tasarım yaptırmak istiyorum.') %>" target="_blank" rel="noopener noreferrer"><%- include('../partials/icon', { name: 'whatsapp', size: 18 }) %> WhatsApp'tan Yazın</a><% } %>
+        </div>
+      </div>
+      <ul class="idea-list" aria-label="Örnek fikirler">
+        <li>İsimli kapı süsü</li>
+        <li>Düğün & nişan mumlukları</li>
+        <li>Kişiye özel poster</li>
+        <li>Doğum hatırası tablo</li>
+        <li>Kurumsal hediye setleri</li>
+        <li>Renk uyumlu vazo</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="nasil">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <span class="eyebrow"><span class="eyebrow__line"></span>Süreç</span>
+        <h2 class="section-title">Nasıl çalışıyoruz?</h2>
+      </div>
+      <ol class="steps steps--cards">
+        <li class="step"><span class="step__no">01</span><div><h3>Fikrinizi anlatın</h3><p>Aşağıdaki formu doldurun ya da WhatsApp'tan ilham fotoğraflarınızı gönderin.</p></div></li>
+        <li class="step"><span class="step__no">02</span><div><h3>Taslak & fiyat</h3><p>Size özel bir taslak, üretim süresi ve fiyatla geri dönüyoruz.</p></div></li>
+        <li class="step"><span class="step__no">03</span><div><h3>Üretim</h3><p>Onayınızın ardından atölyemizde el işçiliğiyle üretiyoruz.</p></div></li>
+        <li class="step"><span class="step__no">04</span><div><h3>Teslimat</h3><p>Özenle paketleyip kapınıza kadar gönderiyoruz.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--tint" id="talep">
+    <div class="container form-layout">
+      <div class="form-layout__aside">
+        <span class="eyebrow"><span class="eyebrow__line"></span>Tasarım Talebi</span>
+        <h2 class="section-title">Hayalinizdeki dekoru anlatın</h2>
+        <p>Formu gönderdikten sonra en kısa sürede telefon veya WhatsApp üzerinden size dönüş yapacağız. Fotoğraf paylaşmak isterseniz WhatsApp hattımızı kullanabilirsiniz.</p>
+        <ul class="contact-list">
+          <% if (settings.phone) { %><li><%- include('../partials/icon', { name: 'phone', size: 18 }) %> <%= settings.phone %></li><% } %>
+          <% if (settings.email) { %><li><%- include('../partials/icon', { name: 'mail', size: 18 }) %> <%= settings.email %></li><% } %>
+        </ul>
+      </div>
+
+      <div class="form-card">
+        <% if (flash) { %><div class="alert alert--<%= flash.type %>" role="alert"><%= flash.msg %></div><% } %>
+        <% if (locals.sent) { %>
+          <div class="success-box" role="status">
+            <span class="success-box__icon"><%- include('../partials/icon', { name: 'check', size: 28 }) %></span>
+            <h3>Talebiniz bize ulaştı!</h3>
+            <p>En kısa sürede sizinle iletişime geçeceğiz. Teşekkür ederiz.</p>
+            <a class="btn btn--ghost" href="/urunler">Ürünlere göz atın</a>
+          </div>
+        <% } else { %>
+        <form method="post" action="/kisiye-ozel#talep" novalidate>
+          <input type="hidden" name="_csrf" value="<%= csrf() %>">
+          <div class="hp" aria-hidden="true"><label>Web sitesi <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+
+          <div class="form-row">
+            <div class="field <%= errors.name ? 'has-error' : '' %>">
+              <label for="f-name">Adınız Soyadınız *</label>
+              <input id="f-name" name="name" required maxlength="100" autocomplete="name" value="<%= values.name || '' %>">
+              <% if (errors.name) { %><small class="field__error"><%= errors.name %></small><% } %>
+            </div>
+            <div class="field <%= errors.phone ? 'has-error' : '' %>">
+              <label for="f-phone">Telefon *</label>
+              <input id="f-phone" name="phone" type="tel" required maxlength="30" autocomplete="tel" placeholder="05xx xxx xx xx" value="<%= values.phone || '' %>">
+              <% if (errors.phone) { %><small class="field__error"><%= errors.phone %></small><% } %>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field <%= errors.email ? 'has-error' : '' %>">
+              <label for="f-email">E-posta</label>
+              <input id="f-email" name="email" type="email" maxlength="120" autocomplete="email" value="<%= values.email || '' %>">
+              <% if (errors.email) { %><small class="field__error"><%= errors.email %></small><% } %>
+            </div>
+            <div class="field">
+              <label for="f-type">Ürün türü</label>
+              <input id="f-type" name="product_type" maxlength="100" list="type-options" placeholder="Örn. isimli tablo" value="<%= values.product_type || locals.prefill || '' %>">
+              <datalist id="type-options">
+                <% navCategories.forEach((c) => { %><option value="<%= c.name %>"><% }) %>
+              </datalist>
+            </div>
+          </div>
+          <div class="field <%= errors.message ? 'has-error' : '' %>">
+            <label for="f-msg">Tasarımınızı anlatın *</label>
+            <textarea id="f-msg" name="message" rows="6" required maxlength="2000" placeholder="Renk, ölçü, yazı, kullanılacak mekân, istediğiniz teslim tarihi..."><%= values.message || '' %></textarea>
+            <% if (errors.message) { %><small class="field__error"><%= errors.message %></small><% } %>
+          </div>
+          <p class="form-hint">Bilgileriniz yalnızca talebinizle ilgili sizinle iletişim kurmak için kullanılır.</p>
+          <button class="btn btn--primary btn--lg btn--block" type="submit">Talebimi Gönder <%- include('../partials/icon', { name: 'arrow', size: 18 }) %></button>
+        </form>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+  <% if (customProducts.length) { %>
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow"><span class="eyebrow__line"></span>İlham Alın</span>
+          <h2 class="section-title">Kişiselleştirilebilen ürünler</h2>
+        </div>
+        <a class="link-arrow" href="/urunler?ozel=1">Tümünü gör <%- include('../partials/icon', { name: 'arrow', size: 16 }) %></a>
+      </div>
+      <div class="product-grid">
+        <% customProducts.forEach((p) => { %><%- include('../partials/product-card', { p }) %><% }) %>
+      </div>
+    </div>
+  </section>
+  <% } %>
+</main>
+
+<%- include('../partials/footer') %>

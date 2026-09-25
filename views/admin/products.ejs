@@ -1,0 +1,64 @@
+<%- include('_top', { actions: '<a class="adm-btn adm-btn--primary" href="/admin/urunler/yeni">+ Yeni Ürün</a>' }) %>
+
+<form class="adm-filter" method="get" action="/admin/urunler">
+  <input type="search" name="q" value="<%= q %>" placeholder="Ürün adı veya kodu ile ara" maxlength="80" aria-label="Ara">
+  <select name="kategori" aria-label="Kategori" data-autosubmit>
+    <option value="">Tüm kategoriler</option>
+    <% categories.forEach((c) => { %><option value="<%= c.id %>" <%= categoryId === c.id ? 'selected' : '' %>><%= c.name %></option><% }) %>
+  </select>
+  <button class="adm-btn adm-btn--ghost" type="submit">Filtrele</button>
+</form>
+
+<% if (products.length) { %>
+<div class="adm-card adm-card--flush">
+  <table class="adm-table">
+    <thead>
+      <tr><th>Ürün</th><th>Kategori</th><th>Fiyat</th><th>Stok</th><th>Durum</th><th class="t-right">İşlemler</th></tr>
+    </thead>
+    <tbody>
+      <% products.forEach((p) => { %>
+      <tr>
+        <td data-label="Ürün">
+          <a class="adm-prod" href="/admin/urunler/<%= p.id %>">
+            <span class="adm-thumb"><% if (p.image) { %><img src="/uploads/<%= p.image %>" alt=""><% } %></span>
+            <span><strong><%= p.name %></strong>
+              <small>
+                <% if (p.is_featured) { %><span class="adm-tag">Öne çıkan</span><% } %>
+                <% if (p.is_customizable) { %><span class="adm-tag adm-tag--clay">Kişiye özel</span><% } %>
+                <% if (p.sku) { %><span class="muted"><%= p.sku %></span><% } %>
+              </small>
+            </span>
+          </a>
+        </td>
+        <td data-label="Kategori"><%= p.category_name || '—' %></td>
+        <td data-label="Fiyat"><%= p.price_cents != null ? formatPrice(p.price_cents) : '—' %></td>
+        <td data-label="Stok"><%= p.stock != null ? p.stock : '—' %></td>
+        <td data-label="Durum">
+          <form method="post" action="/admin/urunler/<%= p.id %>/durum">
+            <input type="hidden" name="_csrf" value="<%= csrf() %>">
+            <button class="adm-pill adm-pill--btn <%= p.is_active ? 'adm-pill--ok' : '' %>" type="submit" title="Durumu değiştir"><%= p.is_active ? 'Yayında' : 'Taslak' %></button>
+          </form>
+        </td>
+        <td class="t-right" data-label="İşlemler">
+          <div class="adm-actions">
+            <% if (p.is_active) { %><a class="adm-btn adm-btn--sm adm-btn--ghost" href="/urun/<%= p.slug %>" target="_blank" rel="noopener">Gör</a><% } %>
+            <a class="adm-btn adm-btn--sm" href="/admin/urunler/<%= p.id %>">Düzenle</a>
+            <form method="post" action="/admin/urunler/<%= p.id %>/sil" data-confirm="&quot;<%= p.name %>&quot; kalıcı olarak silinsin mi?">
+              <input type="hidden" name="_csrf" value="<%= csrf() %>">
+              <button class="adm-btn adm-btn--sm adm-btn--danger" type="submit">Sil</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<% } else { %>
+<div class="adm-card adm-empty adm-empty--lg">
+  <p><%= q || categoryId ? 'Filtreye uygun ürün bulunamadı.' : 'Henüz ürün eklemediniz.' %></p>
+  <a class="adm-btn adm-btn--primary" href="/admin/urunler/yeni">+ İlk ürünü ekle</a>
+</div>
+<% } %>
+
+<%- include('_bottom') %>

@@ -1,0 +1,47 @@
+<%- include('_top', { actions: '<a class="adm-btn adm-btn--primary" href="/admin/urunler/yeni">+ Yeni Ürün</a>' }) %>
+
+<div class="adm-stats">
+  <a class="adm-stat" href="/admin/urunler"><span class="adm-stat__label">Toplam ürün</span><strong><%= stats.products %></strong></a>
+  <a class="adm-stat" href="/admin/urunler"><span class="adm-stat__label">Yayında</span><strong><%= stats.active %></strong></a>
+  <a class="adm-stat" href="/admin/kategoriler"><span class="adm-stat__label">Kategori</span><strong><%= stats.categories %></strong></a>
+  <a class="adm-stat adm-stat--accent" href="/admin/talepler?durum=new"><span class="adm-stat__label">Yeni özel talep</span><strong><%= stats.requests %></strong></a>
+</div>
+
+<div class="adm-grid-2">
+  <section class="adm-card">
+    <div class="adm-card__head"><h2>Son güncellenen ürünler</h2><a href="/admin/urunler">Tümü →</a></div>
+    <% if (recentProducts.length) { %>
+    <ul class="adm-list">
+      <% recentProducts.forEach((p) => { %>
+      <li>
+        <a class="adm-list__row" href="/admin/urunler/<%= p.id %>">
+          <span class="adm-thumb"><% if (p.image) { %><img src="/uploads/<%= p.image %>" alt=""><% } %></span>
+          <span class="adm-list__main"><strong><%= p.name %></strong><small><%= p.price_cents != null ? formatPrice(p.price_cents) : 'Fiyat yok' %></small></span>
+          <span class="adm-pill <%= p.is_active ? 'adm-pill--ok' : '' %>"><%= p.is_active ? 'Yayında' : 'Taslak' %></span>
+        </a>
+      </li>
+      <% }) %>
+    </ul>
+    <% } else { %>
+    <div class="adm-empty">Henüz ürün yok. <a href="/admin/urunler/yeni">İlk ürününüzü ekleyin →</a></div>
+    <% } %>
+  </section>
+
+  <section class="adm-card">
+    <div class="adm-card__head"><h2>Son özel tasarım talepleri</h2><a href="/admin/talepler">Tümü →</a></div>
+    <% if (recentRequests.length) { %>
+    <ul class="adm-list">
+      <% recentRequests.forEach((r) => { %>
+      <li class="adm-list__row">
+        <span class="adm-list__main"><strong><%= r.name %><% if (r.status === 'new') { %> <span class="adm-dot"></span><% } %></strong><small><%= r.product_type || 'Genel talep' %> · <%= r.created_at.slice(0, 16) %></small></span>
+        <% if (phoneWa(r.phone)) { %><a class="adm-btn adm-btn--sm adm-btn--ghost" href="<%= phoneWa(r.phone, `Merhaba ${r.name}, özel tasarım talebiniz hakkında yazıyoruz.`) %>" target="_blank" rel="noopener noreferrer">WhatsApp</a><% } %>
+      </li>
+      <% }) %>
+    </ul>
+    <% } else { %>
+    <div class="adm-empty">Henüz talep gelmedi.</div>
+    <% } %>
+  </section>
+</div>
+
+<%- include('_bottom') %>

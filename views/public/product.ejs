@@ -1,0 +1,105 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="icerik">
+  <section class="section section--product">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="Sayfa yolu">
+        <a href="/">Ana Sayfa</a><span>/</span>
+        <a href="/urunler">Ürünler</a><span>/</span>
+        <% if (product.category_slug) { %><a href="/urunler?kategori=<%= product.category_slug %>"><%= product.category_name %></a><span>/</span><% } %>
+        <span aria-current="page"><%= product.name %></span>
+      </nav>
+
+      <div class="product">
+        <div class="gallery" data-gallery>
+          <div class="gallery__main">
+            <% if (images.length) { %>
+              <img src="/uploads/<%= images[0].filename %>" alt="<%= product.name %>" data-gallery-main>
+            <% } else { %>
+              <span class="ph ph--lg"><%- include('../partials/icon', { name: 'image', size: 64 }) %></span>
+            <% } %>
+          </div>
+          <% if (images.length > 1) { %>
+          <div class="gallery__thumbs">
+            <% images.forEach((img, i) => { %>
+            <button type="button" class="gallery__thumb <%= i === 0 ? 'is-active' : '' %>" data-src="/uploads/<%= img.filename %>" aria-label="<%= i + 1 %>. görseli göster">
+              <img src="/uploads/<%= img.filename %>" alt="" loading="lazy">
+            </button>
+            <% }) %>
+          </div>
+          <% } %>
+        </div>
+
+        <div class="product__info">
+          <% if (product.category_name) { %><a class="card__cat" href="/urunler?kategori=<%= product.category_slug %>"><%= product.category_name %></a><% } %>
+          <h1 class="product__title"><%= product.name %></h1>
+
+          <div class="price price--lg">
+            <% if (product.price_cents != null) { %>
+              <span class="price__now"><%= formatPrice(product.price_cents) %></span>
+              <% if (product.compare_price_cents) { %>
+                <s class="price__old"><%= formatPrice(product.compare_price_cents) %></s>
+                <span class="badge badge--clay">%<%= Math.round((1 - product.price_cents / product.compare_price_cents) * 100) %> indirim</span>
+              <% } %>
+            <% } else { %>
+              <span class="price__ask">Fiyat bilgisi için bize yazın</span>
+            <% } %>
+          </div>
+
+          <% if (product.short_desc) { %><p class="product__lead"><%= product.short_desc %></p><% } %>
+
+          <ul class="product__meta">
+            <% if (product.stock === 0) { %>
+              <li class="is-warn"><%- include('../partials/icon', { name: 'box', size: 18 }) %> Şu an tükendi — sipariş üzerine üretilebilir</li>
+            <% } else { %>
+              <li><%- include('../partials/icon', { name: 'check', size: 18 }) %> Sipariş alınıyor</li>
+            <% } %>
+            <% if (product.is_customizable) { %><li><%- include('../partials/icon', { name: 'sparkle', size: 18 }) %> Renk, ölçü veya yazı kişiselleştirilebilir</li><% } %>
+            <li><%- include('../partials/icon', { name: 'gift', size: 18 }) %> Özenli, hediyeye uygun paketleme</li>
+            <% if (product.sku) { %><li class="muted">Ürün kodu: <%= product.sku %></li><% } %>
+          </ul>
+
+          <div class="product__actions">
+            <% if (orderUrl) { %>
+            <a class="btn btn--wa btn--lg btn--block" href="<%= orderUrl %>" target="_blank" rel="noopener noreferrer">
+              <%- include('../partials/icon', { name: 'whatsapp', size: 20 }) %> WhatsApp ile Sipariş Ver
+            </a>
+            <% } %>
+            <% if (product.is_customizable) { %>
+            <a class="btn btn--ghost btn--lg btn--block" href="/kisiye-ozel?urun=<%= encodeURIComponent(product.name) %>#talep">Bu ürünü kişiselleştir</a>
+            <% } else if (igUrl) { %>
+            <a class="btn btn--ghost btn--lg btn--block" href="<%= igUrl %>" target="_blank" rel="noopener noreferrer"><%- include('../partials/icon', { name: 'instagram', size: 18 }) %> Instagram'dan Yazın</a>
+            <% } %>
+          </div>
+          <p class="product__note">Online ödeme çok yakında. Şimdilik siparişlerinizi WhatsApp üzerinden hızlıca alıyoruz.</p>
+
+          <% if (product.description) { %>
+          <div class="product__desc">
+            <h2>Ürün Detayları</h2>
+            <div class="prose"><%= product.description %></div>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <% if (related.length) { %>
+  <section class="section section--tint">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow"><span class="eyebrow__line"></span>Benzer Ürünler</span>
+          <h2 class="section-title">Bunları da sevebilirsiniz</h2>
+        </div>
+      </div>
+      <div class="product-grid">
+        <% related.forEach((p) => { %><%- include('../partials/product-card', { p }) %><% }) %>
+      </div>
+    </div>
+  </section>
+  <% } %>
+</main>
+
+<%- include('../partials/footer') %>

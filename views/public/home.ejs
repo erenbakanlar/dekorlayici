@@ -1,0 +1,167 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="icerik">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero__grid">
+      <div class="hero__content">
+        <span class="eyebrow"><span class="eyebrow__line"></span>El yapımı · Özenle seçilmiş</span>
+        <h1 class="hero__title"><%= settings.hero_title %></h1>
+        <p class="hero__text"><%= settings.hero_text %></p>
+        <div class="hero__actions">
+          <a class="btn btn--primary btn--lg" href="/urunler">Koleksiyonu Keşfet <%- include('../partials/icon', { name: 'arrow', size: 18 }) %></a>
+          <a class="btn btn--ghost btn--lg" href="/kisiye-ozel">Kişiye Özel Tasarım</a>
+        </div>
+        <ul class="hero__points">
+          <li><%- include('../partials/icon', { name: 'check', size: 16 }) %> El işçiliği</li>
+          <li><%- include('../partials/icon', { name: 'check', size: 16 }) %> Size özel üretim</li>
+          <li><%- include('../partials/icon', { name: 'check', size: 16 }) %> Özenli paketleme</li>
+        </ul>
+      </div>
+
+      <%
+        const heroImg = settings.hero_image || (featured[0] && featured[0].image) || (latest[0] && latest[0].image);
+        const sideImg = (featured[1] && featured[1].image) || (latest[1] && latest[1].image);
+      %>
+      <div class="hero__visual" aria-hidden="true">
+        <div class="hero__sun"></div>
+        <div class="hero__arch">
+          <% if (heroImg) { %><img src="/uploads/<%= heroImg %>" alt="" fetchpriority="high"><% } else { %><span class="hero__arch-fill"></span><% } %>
+        </div>
+        <div class="hero__arch hero__arch--small">
+          <% if (sideImg) { %><img src="/uploads/<%= sideImg %>" alt=""><% } else { %><span class="hero__arch-fill hero__arch-fill--alt"></span><% } %>
+        </div>
+        <div class="hero__note">
+          <span class="hero__note-icon"><%- include('../partials/icon', { name: 'sparkle', size: 20 }) %></span>
+          <span><strong>Kişiye özel</strong><small>İsminiz, renginiz, hikâyeniz</small></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÖZELLİKLER -->
+  <section class="features">
+    <div class="container features__grid">
+      <div class="feature">
+        <span class="feature__icon"><%- include('../partials/icon', { name: 'hand', size: 24 }) %></span>
+        <div><h3>El Yapımı</h3><p>Her parça tek tek, özenle hazırlanır.</p></div>
+      </div>
+      <div class="feature">
+        <span class="feature__icon"><%- include('../partials/icon', { name: 'sparkle', size: 24 }) %></span>
+        <div><h3>Kişiye Özel</h3><p>Renk, ölçü ve yazıyı siz belirleyin.</p></div>
+      </div>
+      <div class="feature">
+        <span class="feature__icon"><%- include('../partials/icon', { name: 'gift', size: 24 }) %></span>
+        <div><h3>Hediyelik Paket</h3><p>Özel günler için şık paketleme.</p></div>
+      </div>
+      <div class="feature">
+        <span class="feature__icon"><%- include('../partials/icon', { name: 'chat', size: 24 }) %></span>
+        <div><h3>Birebir İletişim</h3><p>WhatsApp'tan anında destek.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KATEGORİLER -->
+  <% if (categories.length) { %>
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow"><span class="eyebrow__line"></span>Kategoriler</span>
+          <h2 class="section-title">Mekânınıza göre keşfedin</h2>
+        </div>
+        <a class="link-arrow" href="/urunler">Tümünü gör <%- include('../partials/icon', { name: 'arrow', size: 16 }) %></a>
+      </div>
+      <div class="cat-grid">
+        <% categories.slice(0, 5).forEach((c, i) => { %>
+        <a class="cat-card cat-card--<%= i % 5 %>" href="/urunler?kategori=<%= c.slug %>">
+          <% if (c.image) { %><img src="/uploads/<%= c.image %>" alt="" loading="lazy"><% } %>
+          <span class="cat-card__body">
+            <span class="cat-card__name"><%= c.name %></span>
+            <span class="cat-card__count"><%= c.product_count %> ürün</span>
+          </span>
+        </a>
+        <% }) %>
+      </div>
+    </div>
+  </section>
+  <% } %>
+
+  <!-- ÖNE ÇIKANLAR -->
+  <% const showcase = featured.length ? featured : latest; %>
+  <section class="section section--tint">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow"><span class="eyebrow__line"></span><%= featured.length ? 'Öne Çıkanlar' : 'Yeni Gelenler' %></span>
+          <h2 class="section-title"><%= featured.length ? 'En sevilen parçalar' : 'Koleksiyona yeni katılanlar' %></h2>
+        </div>
+        <a class="link-arrow" href="/urunler">Tüm ürünler <%- include('../partials/icon', { name: 'arrow', size: 16 }) %></a>
+      </div>
+      <% if (showcase.length) { %>
+      <div class="product-grid">
+        <% showcase.forEach((p) => { %><%- include('../partials/product-card', { p }) %><% }) %>
+      </div>
+      <% } else { %>
+      <div class="empty">
+        <%- include('../partials/icon', { name: 'box', size: 40 }) %>
+        <p>Koleksiyonumuz çok yakında burada olacak.</p>
+      </div>
+      <% } %>
+    </div>
+  </section>
+
+  <!-- KİŞİYE ÖZEL BANDI -->
+  <section class="custom-band">
+    <div class="container custom-band__grid">
+      <div class="custom-band__intro">
+        <span class="eyebrow eyebrow--light"><span class="eyebrow__line"></span>Kişiye Özel Tasarım</span>
+        <h2 class="section-title">Hayalinizdeki dekoru birlikte tasarlayalım</h2>
+        <p>İsim yazılı bir tablo, düğününüze özel mumluklar ya da evinizin renklerine uygun bir vazo… Fikrinizi paylaşın, gerisini biz düşünelim.</p>
+        <a class="btn btn--light btn--lg" href="/kisiye-ozel">Tasarım Talebi Oluştur <%- include('../partials/icon', { name: 'arrow', size: 18 }) %></a>
+      </div>
+      <ol class="steps">
+        <li class="step"><span class="step__no">01</span><div><h3>Fikrinizi paylaşın</h3><p>Formu doldurun ya da WhatsApp'tan fotoğraf gönderin.</p></div></li>
+        <li class="step"><span class="step__no">02</span><div><h3>Tasarımı onaylayın</h3><p>Taslak ve fiyatı sizinle paylaşır, onayınızı alırız.</p></div></li>
+        <li class="step"><span class="step__no">03</span><div><h3>Kapınıza gelsin</h3><p>Özenle üretip güvenle paketleyerek gönderiyoruz.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- YENİ GELENLER -->
+  <% if (featured.length && latest.length) { %>
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow"><span class="eyebrow__line"></span>Yeni Gelenler</span>
+          <h2 class="section-title">Koleksiyona yeni katılanlar</h2>
+        </div>
+        <a class="link-arrow" href="/urunler">Tümünü gör <%- include('../partials/icon', { name: 'arrow', size: 16 }) %></a>
+      </div>
+      <div class="product-grid">
+        <% latest.slice(0, 4).forEach((p) => { %><%- include('../partials/product-card', { p }) %><% }) %>
+      </div>
+    </div>
+  </section>
+  <% } %>
+
+  <!-- INSTAGRAM -->
+  <% if (igUrl) { %>
+  <section class="section section--compact">
+    <div class="container">
+      <div class="ig-band">
+        <span class="ig-band__icon"><%- include('../partials/icon', { name: 'instagram', size: 30 }) %></span>
+        <div class="ig-band__text">
+          <h2>İlham için bizi takip edin</h2>
+          <p>Yeni ürünler, müşteri köşeleri ve atölyeden kareler <strong>@<%= settings.instagram %></strong> hesabında.</p>
+        </div>
+        <a class="btn btn--primary" href="<%= igUrl %>" target="_blank" rel="noopener noreferrer">Instagram'da Takip Et</a>
+      </div>
+    </div>
+  </section>
+  <% } %>
+</main>
+
+<%- include('../partials/footer') %>

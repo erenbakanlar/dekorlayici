@@ -1,0 +1,49 @@
+<%- include('_top') %>
+
+<div class="adm-tabs">
+  <a class="<%= !filter ? 'is-active' : '' %>" href="/admin/talepler">Tümü</a>
+  <% Object.entries(STATUS).forEach(([k, v]) => { %>
+  <a class="<%= filter === k ? 'is-active' : '' %>" href="/admin/talepler?durum=<%= k %>"><%= v %></a>
+  <% }) %>
+</div>
+
+<% if (requests.length) { %>
+<div class="adm-requests">
+  <% requests.forEach((r) => { %>
+  <article class="adm-card adm-request adm-request--<%= r.status %>">
+    <header class="adm-request__head">
+      <div>
+        <h2><%= r.name %></h2>
+        <small class="muted"><%= r.created_at.slice(0, 16).replace('T', ' ') %> (UTC)<% if (r.product_type) { %> · <strong><%= r.product_type %></strong><% } %></small>
+      </div>
+      <span class="adm-pill adm-pill--<%= r.status %>"><%= STATUS[r.status] %></span>
+    </header>
+    <p class="adm-request__msg"><%= r.message %></p>
+    <div class="adm-request__contact">
+      <a href="tel:<%= r.phone.replace(/[^\d+]/g, '') %>"><%= r.phone %></a>
+      <% if (r.email) { %><a href="mailto:<%= r.email %>"><%= r.email %></a><% } %>
+    </div>
+    <footer class="adm-request__foot">
+      <% if (phoneWa(r.phone)) { %>
+      <a class="adm-btn adm-btn--sm adm-btn--wa" href="<%= phoneWa(r.phone, `Merhaba ${r.name}, ${settings.site_name} olarak özel tasarım talebiniz hakkında yazıyoruz.`) %>" target="_blank" rel="noopener noreferrer">WhatsApp'tan Yaz</a>
+      <% } %>
+      <form method="post" action="/admin/talepler/<%= r.id %>/durum" class="adm-inline">
+        <input type="hidden" name="_csrf" value="<%= csrf() %>">
+        <select name="status" aria-label="Durum" data-autosubmit>
+          <% Object.entries(STATUS).forEach(([k, v]) => { %><option value="<%= k %>" <%= r.status === k ? 'selected' : '' %>><%= v %></option><% }) %>
+        </select>
+        <noscript><button class="adm-btn adm-btn--sm" type="submit">Güncelle</button></noscript>
+      </form>
+      <form method="post" action="/admin/talepler/<%= r.id %>/sil" data-confirm="Bu talep silinsin mi?">
+        <input type="hidden" name="_csrf" value="<%= csrf() %>">
+        <button class="adm-btn adm-btn--sm adm-btn--danger" type="submit">Sil</button>
+      </form>
+    </footer>
+  </article>
+  <% }) %>
+</div>
+<% } else { %>
+<div class="adm-card adm-empty adm-empty--lg">Bu görünümde talep yok.</div>
+<% } %>
+
+<%- include('_bottom') %>

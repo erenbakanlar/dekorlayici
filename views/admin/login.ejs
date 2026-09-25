@@ -1,0 +1,28 @@
+<%- include('_top') %>
+<main class="login">
+  <div class="login__art" aria-hidden="true">
+    <div class="login__arch"></div>
+    <div class="login__sun"></div>
+    <p class="login__quote">“Her ev, sahibinin hikâyesini anlatır.”</p>
+  </div>
+  <div class="login__panel">
+    <form class="login__form" method="post" action="/admin/giris" autocomplete="on">
+      <span class="adm-logo__name"><%= settings.site_name %></span>
+      <h1>Yönetim paneline giriş</h1>
+      <p class="muted">Ürünlerinizi ve taleplerinizi buradan yönetin.</p>
+      <% if (error) { %><div class="adm-alert adm-alert--error" role="alert"><%= error %></div><% } %>
+      <input type="hidden" name="_csrf" value="<%= csrf() %>">
+      <div class="adm-field">
+        <label for="username">Kullanıcı adı</label>
+        <input id="username" name="username" required maxlength="60" autocomplete="username" value="<%= username %>" autofocus>
+      </div>
+      <div class="adm-field">
+        <label for="password">Parola</label>
+        <input id="password" name="password" type="password" required maxlength="200" autocomplete="current-password">
+      </div>
+      <button class="adm-btn adm-btn--primary adm-btn--block" type="submit">Giriş Yap</button>
+      <a class="login__back" href="/">← Siteye dön</a>
+    </form>
+  </div>
+</main>
+<%- include('_bottom') %>

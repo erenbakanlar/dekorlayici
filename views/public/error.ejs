@@ -1,0 +1,18 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+
+<main id="icerik">
+  <section class="section">
+    <div class="container error-page">
+      <span class="error-page__code"><%= code %></span>
+      <h1 class="section-title"><%= title %></h1>
+      <p><%= message %></p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="/">Ana Sayfaya Dön</a>
+        <a class="btn btn--ghost" href="/urunler">Ürünlere Göz At</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

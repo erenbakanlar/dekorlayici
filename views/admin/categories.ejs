@@ -1,0 +1,56 @@
+<%- include('_top') %>
+
+<div class="adm-grid-side">
+  <section class="adm-card">
+    <h2 class="adm-card__title">Yeni kategori</h2>
+    <form method="post" action="/admin/kategoriler">
+      <input type="hidden" name="_csrf" value="<%= csrf() %>">
+      <div class="adm-field"><label for="c-name">Ad *</label><input id="c-name" name="name" required maxlength="80"></div>
+      <div class="adm-field"><label for="c-desc">Açıklama</label><input id="c-desc" name="description" maxlength="300"></div>
+      <div class="adm-field-row">
+        <div class="adm-field"><label for="c-slug">Bağlantı</label><input id="c-slug" name="slug" maxlength="80" placeholder="otomatik"></div>
+        <div class="adm-field"><label for="c-order">Sıra</label><input id="c-order" name="sort_order" inputmode="numeric" value="<%= categories.length + 1 %>"></div>
+      </div>
+      <button class="adm-btn adm-btn--primary adm-btn--block" type="submit">Kategori Ekle</button>
+    </form>
+  </section>
+
+  <section class="adm-card adm-card--flush">
+    <% if (categories.length) { %>
+    <div class="adm-cats">
+      <% categories.forEach((c) => { %>
+      <details class="adm-cat">
+        <summary>
+          <span class="adm-cat__order"><%= c.sort_order %></span>
+          <span class="adm-cat__main"><strong><%= c.name %></strong><small>/urunler?kategori=<%= c.slug %></small></span>
+          <span class="adm-pill"><%= c.product_count %> ürün</span>
+          <span class="adm-link">Düzenle</span>
+        </summary>
+        <form class="adm-cat__form" method="post" action="/admin/kategoriler/<%= c.id %>">
+          <input type="hidden" name="_csrf" value="<%= csrf() %>">
+          <div class="adm-field-row">
+            <div class="adm-field"><label>Ad</label><input name="name" required maxlength="80" value="<%= c.name %>"></div>
+            <div class="adm-field"><label>Bağlantı</label><input name="slug" maxlength="80" value="<%= c.slug %>"></div>
+          </div>
+          <div class="adm-field-row adm-field-row--wide">
+            <div class="adm-field"><label>Açıklama</label><input name="description" maxlength="300" value="<%= c.description %>"></div>
+            <div class="adm-field"><label>Sıra</label><input name="sort_order" inputmode="numeric" value="<%= c.sort_order %>"></div>
+          </div>
+          <div class="adm-actions">
+            <button class="adm-btn adm-btn--primary adm-btn--sm" type="submit">Kaydet</button>
+            <button class="adm-btn adm-btn--danger adm-btn--sm" type="submit" form="cat-del-<%= c.id %>">Sil</button>
+          </div>
+        </form>
+        <form id="cat-del-<%= c.id %>" method="post" action="/admin/kategoriler/<%= c.id %>/sil" data-confirm="&quot;<%= c.name %>&quot; kategorisi silinsin mi? Ürünler silinmez, kategorisiz kalır." hidden>
+          <input type="hidden" name="_csrf" value="<%= csrf() %>">
+        </form>
+      </details>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <div class="adm-empty adm-empty--lg">Henüz kategori yok.</div>
+    <% } %>
+  </section>
+</div>
+
+<%- include('_bottom') %>

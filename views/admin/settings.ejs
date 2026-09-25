@@ -1,0 +1,65 @@
+<%- include('_top') %>
+
+<% if (Object.keys(errors).length) { %><div class="adm-alert adm-alert--error" role="alert">Lütfen işaretli alanları kontrol edin.</div><% } %>
+
+<form class="adm-form" method="post" action="/admin/ayarlar" enctype="multipart/form-data">
+  <input type="hidden" name="_csrf" value="<%= csrf() %>">
+  <div class="adm-form__main">
+    <section class="adm-card">
+      <h2 class="adm-card__title">Marka</h2>
+      <div class="adm-field-row">
+        <div class="adm-field <%= errors.site_name ? 'has-error' : '' %>"><label for="site_name">Site adı *</label><input id="site_name" name="site_name" maxlength="60" required value="<%= values.site_name %>">
+          <% if (errors.site_name) { %><small class="adm-error"><%= errors.site_name %></small><% } %></div>
+        <div class="adm-field"><label for="tagline">Slogan</label><input id="tagline" name="tagline" maxlength="120" value="<%= values.tagline %>"></div>
+      </div>
+      <div class="adm-field"><label for="announcement">Üst duyuru şeridi <span class="muted">— boş bırakırsanız gizlenir</span></label><input id="announcement" name="announcement" maxlength="160" value="<%= values.announcement %>"></div>
+    </section>
+
+    <section class="adm-card">
+      <h2 class="adm-card__title">Ana sayfa karşılama alanı</h2>
+      <div class="adm-field"><label for="hero_title">Başlık</label><input id="hero_title" name="hero_title" maxlength="120" value="<%= values.hero_title %>"></div>
+      <div class="adm-field"><label for="hero_text">Açıklama</label><textarea id="hero_text" name="hero_text" rows="3" maxlength="300"><%= values.hero_text %></textarea></div>
+      <div class="adm-field <%= errors.hero_image ? 'has-error' : '' %>">
+        <label>Karşılama görseli <span class="muted">— boşsa öne çıkan ürün görseli kullanılır (dikey görsel önerilir)</span></label>
+        <div class="adm-hero-img">
+          <% if (values.hero_image) { %>
+            <img src="/uploads/<%= values.hero_image %>" alt="">
+          <% } %>
+          <div>
+            <input type="file" name="hero_image" accept="image/jpeg,image/png,image/webp,image/avif">
+            <% if (values.hero_image) { %><label class="adm-check"><input type="checkbox" name="remove_hero_image" value="1"> Mevcut görseli kaldır</label><% } %>
+          </div>
+        </div>
+        <% if (errors.hero_image) { %><small class="adm-error"><%= errors.hero_image %></small><% } %>
+      </div>
+    </section>
+
+    <section class="adm-card">
+      <h2 class="adm-card__title">Hakkımızda metni</h2>
+      <div class="adm-field"><textarea name="about_text" rows="7" maxlength="3000" aria-label="Hakkımızda metni"><%= values.about_text %></textarea></div>
+    </section>
+  </div>
+
+  <aside class="adm-form__side">
+    <section class="adm-card">
+      <h2 class="adm-card__title">İletişim & sosyal medya</h2>
+      <div class="adm-field <%= errors.whatsapp ? 'has-error' : '' %>">
+        <label for="whatsapp">WhatsApp numarası</label>
+        <input id="whatsapp" name="whatsapp" inputmode="numeric" maxlength="20" placeholder="905321234567" value="<%= values.whatsapp %>">
+        <small class="<%= errors.whatsapp ? 'adm-error' : 'muted' %>"><%= errors.whatsapp || 'Ülke koduyla, boşluksuz. Sipariş butonları bu numaraya yönlenir.' %></small>
+      </div>
+      <div class="adm-field <%= errors.instagram ? 'has-error' : '' %>">
+        <label for="instagram">Instagram kullanıcı adı</label>
+        <div class="adm-prefix"><span>@</span><input id="instagram" name="instagram" maxlength="40" value="<%= values.instagram %>"></div>
+        <% if (errors.instagram) { %><small class="adm-error"><%= errors.instagram %></small><% } %>
+      </div>
+      <div class="adm-field"><label for="phone">Telefon (görünen)</label><input id="phone" name="phone" maxlength="30" value="<%= values.phone %>"></div>
+      <div class="adm-field <%= errors.email ? 'has-error' : '' %>"><label for="email">E-posta</label><input id="email" name="email" type="email" maxlength="120" value="<%= values.email %>">
+        <% if (errors.email) { %><small class="adm-error"><%= errors.email %></small><% } %></div>
+      <div class="adm-field"><label for="address">Adres</label><input id="address" name="address" maxlength="200" value="<%= values.address %>"></div>
+      <button class="adm-btn adm-btn--primary adm-btn--block" type="submit">Ayarları Kaydet</button>
+    </section>
+  </aside>
+</form>
+
+<%- include('_bottom') %>

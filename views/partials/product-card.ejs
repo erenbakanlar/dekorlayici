@@ -1,0 +1,27 @@
+<article class="card">
+  <a class="card__media" href="/urun/<%= p.slug %>" tabindex="-1" aria-hidden="true">
+    <% if (p.image) { %>
+      <img src="/uploads/<%= p.image %>" alt="" loading="lazy" width="600" height="750">
+      <% if (p.image2) { %><img class="card__alt" src="/uploads/<%= p.image2 %>" alt="" loading="lazy" width="600" height="750"><% } %>
+    <% } else { %>
+      <span class="ph"><%- include('icon', { name: 'image', size: 44 }) %></span>
+    <% } %>
+    <span class="card__badges">
+      <% if (p.compare_price_cents && p.price_cents) { %><span class="badge badge--clay">%<%= Math.round((1 - p.price_cents / p.compare_price_cents) * 100) %></span><% } %>
+      <% if (p.is_customizable) { %><span class="badge">Kişiye özel</span><% } %>
+      <% if (p.stock === 0) { %><span class="badge badge--muted">Tükendi</span><% } %>
+    </span>
+  </a>
+  <div class="card__body">
+    <% if (p.category_name) { %><span class="card__cat"><%= p.category_name %></span><% } %>
+    <h3 class="card__title"><a href="/urun/<%= p.slug %>"><%= p.name %></a></h3>
+    <div class="price">
+      <% if (p.price_cents != null) { %>
+        <span class="price__now"><%= formatPrice(p.price_cents) %></span>
+        <% if (p.compare_price_cents) { %><s class="price__old"><%= formatPrice(p.compare_price_cents) %></s><% } %>
+      <% } else { %>
+        <span class="price__ask">Fiyat için iletişime geçin</span>
+      <% } %>
+    </div>
+  </div>
+</article>

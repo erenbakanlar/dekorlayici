@@ -1,0 +1,124 @@
+<%- include('_top', { actions: product.id && product.is_active ? `<a class="adm-btn adm-btn--ghost" href="/urun/${encodeURIComponent(product.slug)}" target="_blank" rel="noopener">Sitede gör ↗</a>` : '' }) %>
+
+<a class="adm-back" href="/admin/urunler">← Ürünlere dön</a>
+
+<% if (Object.keys(errors).length) { %>
+<div class="adm-alert adm-alert--error" role="alert">Lütfen işaretli alanları kontrol edin.</div>
+<% } %>
+
+<form class="adm-form" method="post" action="<%= product.id ? `/admin/urunler/${product.id}` : '/admin/urunler/yeni' %>" enctype="multipart/form-data" id="product-form">
+  <input type="hidden" name="_csrf" value="<%= csrf() %>">
+
+  <div class="adm-form__main">
+    <section class="adm-card">
+      <h2 class="adm-card__title">Ürün bilgileri</h2>
+      <div class="adm-field <%= errors.name ? 'has-error' : '' %>">
+        <label for="name">Ürün adı *</label>
+        <input id="name" name="name" required maxlength="150" value="<%= product.name %>" data-slug-source>
+        <% if (errors.name) { %><small class="adm-error"><%= errors.name %></small><% } %>
+      </div>
+      <div class="adm-field">
+        <label for="slug">Bağlantı (URL) <span class="muted">— boş bırakırsanız otomatik oluşur</span></label>
+        <div class="adm-prefix"><span>/urun/</span><input id="slug" name="slug" maxlength="80" value="<%= product.slug %>" data-slug-target></div>
+      </div>
+      <div class="adm-field">
+        <label for="short_desc">Kısa açıklama <span class="muted">— kartlarda ve arama sonuçlarında görünür</span></label>
+        <input id="short_desc" name="short_desc" maxlength="300" value="<%= product.short_desc %>">
+      </div>
+      <div class="adm-field">
+        <label for="description">Detaylı açıklama</label>
+        <textarea id="description" name="description" rows="8" maxlength="8000" placeholder="Malzeme, ölçüler, bakım önerileri, kişiselleştirme seçenekleri..."><%= product.description %></textarea>
+      </div>
+    </section>
+
+    <section class="adm-card" id="gorseller">
+      <h2 class="adm-card__title">Görseller</h2>
+      <% if (images.length) { %>
+      <div class="adm-images">
+        <% images.forEach((img, i) => { %>
+        <figure class="adm-image <%= i === 0 ? 'is-cover' : '' %>">
+          <img src="/uploads/<%= img.filename %>" alt="">
+          <% if (i === 0) { %><span class="adm-image__badge">Kapak</span><% } %>
+          <figcaption>
+            <% if (i !== 0) { %>
+            <button class="adm-link" type="submit" form="cover-<%= img.id %>">Kapak yap</button>
+            <% } %>
+            <button class="adm-link adm-link--danger" type="submit" form="del-<%= img.id %>">Sil</button>
+          </figcaption>
+        </figure>
+        <% }) %>
+      </div>
+      <% } %>
+      <label class="adm-drop <%= errors.images ? 'has-error' : '' %>" data-drop>
+        <input type="file" name="images" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" multiple data-file-input>
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+        <strong>Görsel seçin veya buraya sürükleyin</strong>
+        <span class="muted">JPG, PNG, WEBP · her biri en fazla 8 MB · tek seferde <%= maxFiles %> adet</span>
+      </label>
+      <div class="adm-preview" data-preview></div>
+      <% if (errors.images) { %><small class="adm-error"><%= errors.images %></small><% } %>
+      <p class="adm-hint">İlk görsel kapak olarak kullanılır. Görseller otomatik olarak optimize edilir (WEBP) ve konum gibi gizli bilgiler temizlenir.</p>
+    </section>
+  </div>
+
+  <aside class="adm-form__side">
+    <section class="adm-card">
+      <h2 class="adm-card__title">Yayın</h2>
+      <label class="adm-switch"><input type="checkbox" name="is_active" value="1" <%= product.is_active ? 'checked' : '' %>><span></span> Sitede yayında</label>
+      <label class="adm-switch"><input type="checkbox" name="is_featured" value="1" <%= product.is_featured ? 'checked' : '' %>><span></span> Ana sayfada öne çıkar</label>
+      <label class="adm-switch"><input type="checkbox" name="is_customizable" value="1" <%= product.is_customizable ? 'checked' : '' %>><span></span> Kişiye özel yapılabilir</label>
+      <button class="adm-btn adm-btn--primary adm-btn--block" type="submit"><%= product.id ? 'Değişiklikleri Kaydet' : 'Ürünü Ekle' %></button>
+    </section>
+
+    <section class="adm-card">
+      <h2 class="adm-card__title">Kategori</h2>
+      <div class="adm-field <%= errors.category_id ? 'has-error' : '' %>">
+        <select name="category_id" aria-label="Kategori">
+          <option value="">Kategorisiz</option>
+          <% categories.forEach((c) => { %><option value="<%= c.id %>" <%= product.category_id === c.id ? 'selected' : '' %>><%= c.name %></option><% }) %>
+        </select>
+        <% if (errors.category_id) { %><small class="adm-error"><%= errors.category_id %></small><% } %>
+      </div>
+      <a class="adm-link" href="/admin/kategoriler">Kategorileri yönet →</a>
+    </section>
+
+    <section class="adm-card">
+      <h2 class="adm-card__title">Fiyat & stok</h2>
+      <div class="adm-field <%= errors.price ? 'has-error' : '' %>">
+        <label for="price">Satış fiyatı (₺)</label>
+        <input id="price" name="price" inputmode="decimal" maxlength="20" placeholder="Boş: “Fiyat için iletişime geçin”" value="<%= product.price %>">
+        <% if (errors.price) { %><small class="adm-error"><%= errors.price %></small><% } %>
+      </div>
+      <div class="adm-field <%= errors.compare_price ? 'has-error' : '' %>">
+        <label for="compare_price">Eski fiyat (₺) <span class="muted">— indirim göstermek için</span></label>
+        <input id="compare_price" name="compare_price" inputmode="decimal" maxlength="20" value="<%= product.compare_price %>">
+        <% if (errors.compare_price) { %><small class="adm-error"><%= errors.compare_price %></small><% } %>
+      </div>
+      <div class="adm-field-row">
+        <div class="adm-field <%= errors.stock ? 'has-error' : '' %>">
+          <label for="stock">Stok</label>
+          <input id="stock" name="stock" inputmode="numeric" maxlength="10" placeholder="Takip yok" value="<%= product.stock %>">
+          <% if (errors.stock) { %><small class="adm-error"><%= errors.stock %></small><% } %>
+        </div>
+        <div class="adm-field">
+          <label for="sku">Ürün kodu</label>
+          <input id="sku" name="sku" maxlength="60" value="<%= product.sku %>">
+        </div>
+      </div>
+    </section>
+  </aside>
+</form>
+
+<% if (product.id) { %>
+  <% images.forEach((img) => { %>
+  <form id="cover-<%= img.id %>" method="post" action="/admin/urunler/<%= product.id %>/gorsel/<%= img.id %>/kapak" hidden><input type="hidden" name="_csrf" value="<%= csrf() %>"></form>
+  <form id="del-<%= img.id %>" method="post" action="/admin/urunler/<%= product.id %>/gorsel/<%= img.id %>/sil" data-confirm="Bu görsel silinsin mi?" hidden><input type="hidden" name="_csrf" value="<%= csrf() %>"></form>
+  <% }) %>
+  <form class="adm-danger-zone" method="post" action="/admin/urunler/<%= product.id %>/sil" data-confirm="Bu ürün ve tüm görselleri kalıcı olarak silinecek. Emin misiniz?">
+    <input type="hidden" name="_csrf" value="<%= csrf() %>">
+    <div><strong>Ürünü sil</strong><p class="muted">Bu işlem geri alınamaz. Geçici olarak gizlemek için “Sitede yayında” seçeneğini kapatabilirsiniz.</p></div>
+    <button class="adm-btn adm-btn--danger" type="submit">Ürünü Sil</button>
+  </form>
+<% } %>
+
+<%- include('_bottom') %>

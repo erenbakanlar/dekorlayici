@@ -1,0 +1,64 @@
+<footer class="site-footer">
+  <div class="container site-footer__grid">
+    <div class="site-footer__brand">
+      <a class="logo logo--light" href="/">
+        <svg class="logo__mark" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 36V18a12 12 0 0 1 24 0v18" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M14 36V20a6 6 0 0 1 12 0v16" fill="none" stroke="currentColor" stroke-width="2.4" opacity=".55"/><circle cx="20" cy="9" r="2" fill="currentColor"/></svg>
+        <span class="logo__text"><%= settings.site_name %></span>
+      </a>
+      <p><%= settings.tagline %></p>
+      <div class="social">
+        <% if (igUrl) { %><a href="<%= igUrl %>" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><%- include('icon', { name: 'instagram', size: 20 }) %></a><% } %>
+        <% if (waUrl) { %><a href="<%= waUrl %>" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><%- include('icon', { name: 'whatsapp', size: 20 }) %></a><% } %>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="site-footer__title">Koleksiyon</h3>
+      <ul>
+        <li><a href="/urunler">Tüm Ürünler</a></li>
+        <% navCategories.slice(0, 6).forEach((c) => { %><li><a href="/urunler?kategori=<%= c.slug %>"><%= c.name %></a></li><% }) %>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="site-footer__title">Kurumsal</h3>
+      <ul>
+        <li><a href="/hakkimizda">Hakkımızda</a></li>
+        <li><a href="/kisiye-ozel">Kişiye Özel Tasarım</a></li>
+        <li><a href="/kisiye-ozel#nasil">Nasıl Sipariş Verilir?</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="site-footer__title">İletişim</h3>
+      <ul class="site-footer__contact">
+        <% if (settings.phone) { %><li><%- include('icon', { name: 'phone', size: 17 }) %><a href="tel:<%= settings.phone.replace(/[^\d+]/g, '') %>"><%= settings.phone %></a></li><% } %>
+        <% if (settings.email) { %><li><%- include('icon', { name: 'mail', size: 17 }) %><a href="mailto:<%= settings.email %>"><%= settings.email %></a></li><% } %>
+        <% if (settings.address) { %><li><%- include('icon', { name: 'pin', size: 17 }) %><span><%= settings.address %></span></li><% } %>
+      </ul>
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <div class="container site-footer__bottom-inner">
+      <span>© <%= year %> <%= settings.site_name %>. Tüm hakları saklıdır.</span>
+      <span>El emeğiyle, sevgiyle hazırlanır.</span>
+    </div>
+  </div>
+</footer>
+
+<div class="float-actions" aria-label="Hızlı iletişim">
+  <% if (igUrl) { %>
+  <a class="float-btn float-btn--ig" href="<%= igUrl %>" target="_blank" rel="noopener noreferrer" aria-label="Instagram'da bizi takip edin">
+    <%- include('icon', { name: 'instagram', size: 26 }) %><span class="float-btn__label">Instagram</span>
+  </a>
+  <% } %>
+  <% if (waUrl) { %>
+  <a class="float-btn float-btn--wa" href="<%= locals.orderUrl || waUrl %>" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp ile yazın">
+    <%- include('icon', { name: 'whatsapp', size: 28 }) %><span class="float-btn__label">WhatsApp</span>
+  </a>
+  <% } %>
+</div>
+
+<script src="/static/js/site.js" defer></script>
+</body>
+</html>
